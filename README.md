@@ -1,4 +1,4 @@
-![Hermes Logo](assets\hermes_logo.png)
+![Hermes Logo](assets/hermes_logo.png "Hermes Logo")
 
 *HERMES* is a python-based, open-source literature mining tool designed to parse full-text, open-access articles from PubMed Central (PMC) and rank them based on:
 
@@ -46,4 +46,4 @@ To use *HERMES* and generate a PDF report with ranked articles for your query:
 - Enter a number of results to be included in final report
 - Submit query
 
-![Hermes App](assets\app_screenshot.png)
+![Hermes App](assets/app_screenshot.png "Hermes App")
