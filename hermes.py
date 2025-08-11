@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 # Hermes v1.0
-# 2025-08-05
+# 2025-08-11
 # Written by Julien Charest & Katarina Priselac
 
 from os import path, getcwd
 import sys
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 import threading
 import time
 import tkinter as tk
