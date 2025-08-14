@@ -13,7 +13,12 @@ import spacy
 import re
 import requests
 import pandas as pd
-nltk.download('punkt_tab')
+
+# Getting nltk model for sumy
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
 
 # Dealing with SpaCy
 nlp = spacy.load("en_ner_bionlp13cg_md")
@@ -189,14 +194,7 @@ def summarize_article(pmcid):
     if len(summary) < 1:
         summary = "N/A"
 
-    # Context: "This review describes the current knowledge on strain degeneration in the context of industry" or "This research paper studied cellulase production in the context of industry"
-    # Could either be done from full xml or from introduction section
-     
-    # Experiments:
-    # Could either be done from full xml or from method section
-
     # Mentioned Biomedical Entities (SciSpacy with en_ner_bionlp13cg_md):
-
     doc = nlp(article)
 
     # - Genes ["GENE_OR_GENE_PRODUCT"]
@@ -270,9 +268,6 @@ def summarize_article(pmcid):
         pathways = "N/A"
     else:
         pathways = ", ".join(sorted(pathways))
-
-    # Conclusions: [...]
-    # Could be done with full xml or conclusion section
 
     results = [pmcid, [summary, gene_names, proteins, diseases, chemicals, cells, organisms, tissues, pathways]]
 

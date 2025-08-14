@@ -26,9 +26,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import SimpleQueue
 import random
 
-# Defining number of threads (max 3 requests/sec to avoid flagging by Entrez)
-max_workers=10
-
 #####################
 # Taking User Input #
 #####################
@@ -341,7 +338,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     progress_bar.update_idletasks()
     progress_label.update_idletasks()
 
-    with ThreadPoolExecutor(max_workers) as executor:
+    with ThreadPoolExecutor(10) as executor:
         futures = {executor.submit(process_pmcid, pmcid): pmcid for pmcid in id_list}
         for future in as_completed(futures):
             result = future.result()
@@ -359,13 +356,13 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     retry_count = 0
 
     # Reattempt Miner if Data Fetch Error
-    while (len(errors) > 0) & (retry_count < max_workers + 2):
+    while (len(errors) > 0) & (retry_count < 10):
 
         # Initiating Temporary Error List
         errors_temp = []
 
         # Multi-treaded Executor
-        with ThreadPoolExecutor(max_workers) as executor:
+        with ThreadPoolExecutor(5) as executor:
             futures = {executor.submit(process_pmcid, pmcid): pmcid for pmcid in errors}
             for future in as_completed(futures):
                 result = future.result()
@@ -612,7 +609,7 @@ frame.pack(padx=10, pady=10, anchor="nw")
 img_logo = tk.PhotoImage(file=logo_path)
 logo = tk.Label(master = frame, image=img_logo, bg='white', fg='white')
 logo.grid(row=0, column=0, sticky="w")
-greeting = tk.Label(master = frame, text = "Hermes is an open-source mining tool for open access literature, enabling scoring, and ranking of full-text articles based on customizable keyword sets and other relevance metrics.", bg='white', fg='black')
+greeting = tk.Label(master = frame, text = "Hermes is an open-source mining tool for open-access literature, enabling scoring, and ranking of full-text articles based on customizable keyword sets and other relevance metrics.", bg='white', fg='black')
 greeting.grid(row=2, column=0, sticky="w")
 
 # Request Title Fields

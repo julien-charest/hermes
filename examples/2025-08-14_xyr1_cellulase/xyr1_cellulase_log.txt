@@ -1,0 +1,579 @@
+Request Title: xyr1_cellulase
+Query Terms: xyr1 cellulase production trichoderma reesei
+Parsing Keywords: ['xyr1', 'ace3', 'cbh1', 'cellulase', 'reesei']
+Mandatory Keywords: False
+Retmax: 100000
+N Results: 25
+
+Log:
+Querying Pubmed PMC database...
+Retrieving complete PMC entries for 416 hits...
+Hits: ['7894907', '6885621', '7467262', '9888229', '8822348', '9759857', '9431493', '3067402', '4390390', '5725425', '9663580', '9118834', '4409711', '6509817', '10978942', '7731781', '8276808', '9894936', '4135799', '4528718', '3126698', '9953249', '3370264', '3494722', '5956553', '3302631', '4227869', '10364367', '10197057', '8725555', '6767844', '10859021', '3275749', '9113457', '3209057', '8262880', '10991602', '10204303', '10050438', '5009570', '3829138', '10148476', '10790555', '6901240', '9552611', '6606794', '3753334', '6901314', '10170752', '3648571', '6175961', '11032611', '6948969', '6691364', '8033665', '3226525', '7243233', '6430808', '8912865', '8939176', '10305053', '10770280', '8397228', '7101855', '3342899', '4567317', '5403845', '12310822', '3568919', '10687790', '10887015', '9578197', '10744372', '8898424', '7412840', '9784857', '7701987', '4282317', '3364853', '6454604', '4864836', '9765177', '6696435', '10992071', '10003064', '8487154', '6691542', '4062390', '11580550', '6240962', '7330100', '6100732', '10612264', '7351519', '6792246', '7110754', '5865335', '6380019', '2708423', '3831817', '10687990', '3811509', '4173072', '4754417', '6781402', '5249074', '10991369', '4206845', '11267940', '9706901', '6174759', '5806297', '2584116', '9239231', '6747117', '4413991', '2794218', '10394125', '8542335', '5831609', '4140635', '11448445', '6204389', '6193071', '7491124', '5223008', '2653238', '3930720', '2483294', '3629775', '3654998', '9797302', '3847502', '6202828', '5628480', '8513308', '7396459', '8825865', '3922861', '5289010', '5913809', '4706842', '11053031', '6662751', '7212764', '8966179', '3341005', '11265206', '3358856', '5052222', '7251307', '5835483', '9862206', '5192574', '4696228', '10858516', '7381231', '7072954', '5588705', '5397809', '7365963', '5883349', '4279801', '9394075', '8004424', '5688634', '4526299', '3917621', '6734591', '3183063', '4924338', '5541735', '7869464', '5002442', '6026109', '5658622', '4136121', '10472679', '4850161', '5694953', '6581689', '7399057', '3731814', '5879799', '5177634', '5607079', '7118919', '8877461', '8425032', '4902900', '11678864', '5669031', '3998047', '4446002', '4812632', '2749017', '5000517', '5734013', '9288086', '6745793', '6182798', '4590280', '9604776', '8319711', '3948607', '6570945', '11610954', '11409678', '5493111', '8290022', '8254082', '5425790', '4864841', '4955148', '7327088', '10071736', '7120360', '10345034', '7299030', '7789494', '8710005', '5956788', '4422585', '10512294', '7360787', '6097775', '11024145', '8549263', '1694815', '11344075', '4239378', '11677643', '5700522', '5468973', '11946570', '5952832', '3700993', '10991675', '6121985', '4460134', '9745658', '4858783', '7182937', '10745023', '6700826', '5397729', '8123685', '3318299', '4731210', '5496416', '6167437', '4801825', '3165376', '9518983', '3750697', '9864444', '3222308', '6853848', '3598899', '1398055', '4076981', '10835966', '2749820', '10671955', '10588483', '4277563', '3226318', '3193291', '5476202', '7547499', '7372938', '6061484', '10040116', '5478631', '10983054', '2576687', '5048463', '10552389', '4247816', '3044236', '6030313', '7745202', '6269021', '9971017', '10455118', '10442046', '7123961', '8359064', '5331742', '4652331', '4620465', '11611025', '8442374', '4015282', '3599271', '5068150', '8548487', '8315967', '7391575', '10455633', '4864837', '5874446', '3012607', '8176577', '11121469', '5264264', '4525703', '8374019', '3751045', '7084071', '5307856', '9781776', '8954095', '4030981', '4950808', '9335490', '4950302', '9746306', '6153651', '4757592', '5859471', '8607671', '7985698', '9869559', '5743704', '8256616', '7589932', '8256007', '4461149', '4522099', '11205114', '8102577', '11610986', '12112898', '6529561', '10141939', '8743023', '8020424', '3127718', '7927390', '8928461', '5847190', '8146680', '8113380', '4704632', '8313289', '5609067', '6073530', '11847360', '7829358', '6249967', '3698209', '11508783', '3219568', '12194574', '4771370', '3346360', '3346484', '9166314', '6174557', '6348686', '10512326', '4746737', '5795998', '12072009', '219359', '11610957', '12176254', '11636153', '6927189', '10134904', '9020665', '12105496', '8704890', '11610967', '7544787', '9174946', '4715039', '8671598', '8778285', '12010586', '3384452', '7570026', '12028744', '12112844', '11708020', '10570388', '8461902', '8148604', '7607812', '5908196', '11411985', '11633134', '11508260', '9518982', '11027231', '11046756', '12174065', '3979922', '11466781', '6424901', '5469009', '5683368', '10612256', '12029156', '8395912', '10407233', '7729004', '8466774', '10670345', '10685594', '5696597', '10732044', '9900707', '9244802', '9159911']
+Entrez fetch failed for 5725425
+Entrez fetch failed for 4390390
+Entrez fetch failed for 7894907
+Entrez fetch failed for 9431493
+Entrez fetch failed for 9888229
+Processing complete for 9759857
+Processing complete for 3067402
+Processing complete for 6885621
+Processing complete for 8822348
+Processing complete for 7467262
+Entrez fetch failed for 9118834
+Entrez fetch failed for 10978942
+Processing complete for 4409711
+Entrez fetch failed for 4528718
+Processing complete for 7731781
+Processing complete for 9663580
+Processing complete for 6509817
+Processing complete for 4135799
+Processing complete for 8276808
+Processing complete for 9894936
+Processing complete for 9953249
+Entrez fetch failed for 4227869
+Processing complete for 3126698
+Processing complete for 3370264
+Entrez fetch failed for 8725555
+Entrez fetch failed for 10197057
+Entrez fetch failed for 10364367
+Processing complete for 3302631
+Processing complete for 5956553
+Processing complete for 3494722
+Entrez fetch failed for 9113457
+Entrez fetch failed for 3275749
+Entrez fetch failed for 3209057
+Processing complete for 6767844
+Processing complete for 10991602
+Processing complete for 10859021
+Processing complete for 10204303
+Processing complete for 8262880
+Processing complete for 10050438
+Entrez fetch failed for 10790555
+Processing complete for 3829138
+Processing complete for 10148476
+Entrez fetch failed for 5009570
+Processing complete for 6901240
+Processing complete for 6606794
+Entrez fetch failed for 10170752
+Entrez fetch failed for 3753334
+Processing complete for 9552611
+Processing complete for 6901314
+Processing complete for 3648571
+Entrez fetch failed for 6691364
+Entrez fetch failed for 8033665
+Processing complete for 6175961
+Entrez fetch failed for 6430808
+Processing complete for 11032611
+Processing complete for 6948969
+Entrez fetch failed for 8912865
+Processing complete for 10305053
+Processing complete for 3226525
+Processing complete for 7243233
+Entrez fetch failed for 10770280
+Processing complete for 8939176
+Entrez fetch failed for 4567317
+Entrez fetch failed for 7101855
+Processing complete for 8397228
+Processing complete for 5403845
+Processing complete for 3342899
+Entrez fetch failed for 10887015
+Processing complete for 10687790
+Processing complete for 12310822
+Processing complete for 3568919
+Entrez fetch failed for 9578197
+Entrez fetch failed for 7412840
+Processing complete for 9784857
+Entrez fetch failed for 4282317
+Processing complete for 10744372
+Processing complete for 8898424
+Entrez fetch failed for 4864836
+Entrez fetch failed for 9765177
+Entrez fetch failed for 6696435
+Processing complete for 3364853
+Processing complete for 7701987
+Entrez fetch failed for 8487154
+Processing complete for 6454604
+Entrez fetch failed for 11580550
+Processing complete for 10003064
+Processing complete for 6691542
+Processing complete for 10992071
+Entrez fetch failed for 4062390
+Entrez fetch failed for 10612264
+Processing complete for 7330100
+Processing complete for 6100732
+Processing complete for 6240962
+Entrez fetch failed for 5865335
+Entrez fetch failed for 7110754
+Entrez fetch failed for 2708423
+Processing complete for 6380019
+Processing complete for 6792246
+Processing complete for 7351519
+Entrez fetch failed for 4173072
+Entrez fetch failed for 3811509
+Processing complete for 3831817
+Processing complete for 10687990
+Processing complete for 4754417
+Entrez fetch failed for 10991369
+Processing complete for 11267940
+Entrez fetch failed for 4206845
+Entrez fetch failed for 9706901
+Processing complete for 5249074
+Processing complete for 6781402
+Entrez fetch failed for 9239231
+Entrez fetch failed for 5806297
+Processing complete for 6747117
+Processing complete for 2584116
+Processing complete for 6174759
+Entrez fetch failed for 8542335
+Processing complete for 2794218
+Processing complete for 4413991
+Entrez fetch failed for 5831609
+Processing complete for 10394125
+Entrez fetch failed for 6204389
+Entrez fetch failed for 5223008
+Processing complete for 11448445
+Entrez fetch failed for 3930720
+Processing complete for 4140635
+Processing complete for 7491124
+Processing complete for 6193071
+Processing complete for 3629775
+Processing complete for 3654998
+Processing complete for 2483294
+Entrez fetch failed for 5628480
+Processing complete for 2653238
+Entrez fetch failed for 8513308
+Processing complete for 9797302
+Processing complete for 6202828
+Processing complete for 3847502
+Entrez fetch failed for 5289010
+Entrez fetch failed for 5913809
+Processing complete for 8825865
+Processing complete for 7396459
+Processing complete for 3922861
+Entrez fetch failed for 4706842
+Entrez fetch failed for 8966179
+Entrez fetch failed for 11265206
+Entrez fetch failed for 3341005
+Processing complete for 11053031
+Processing complete for 7212764
+Processing complete for 6662751
+Processing complete for 3358856
+Processing complete for 5835483
+Entrez fetch failed for 5052222
+Processing complete for 7251307
+Entrez fetch failed for 10858516
+Entrez fetch failed for 7072954
+Entrez fetch failed for 5397809
+Entrez fetch failed for 5588705
+Processing complete for 9862206
+Processing complete for 4696228
+Processing complete for 5192574
+Processing complete for 7381231
+Processing complete for 5883349
+Processing complete for 7365963
+Processing complete for 4279801
+Entrez fetch failed for 3917621
+Entrez fetch failed for 3183063
+Entrez fetch failed for 6734591
+Processing complete for 8004424
+Processing complete for 4526299
+Processing complete for 5688634
+Entrez fetch failed for 5002442
+Processing complete for 7869464
+Entrez fetch failed for 4924338
+Processing complete for 5541735
+Entrez fetch failed for 10472679
+Entrez fetch failed for 4850161
+Processing complete for 4136121
+Processing complete for 5694953
+Processing complete for 5658622
+Entrez fetch failed for 5879799
+Entrez fetch failed for 5177634
+Entrez fetch failed for 8877461
+Processing complete for 7399057
+Entrez fetch failed for 7118919
+Processing complete for 6581689
+Processing complete for 3731814
+Entrez fetch failed for 5607079
+Entrez fetch failed for 11678864
+Processing complete for 5669031
+Processing complete for 8425032
+Processing complete for 4902900
+Processing complete for 3998047
+Entrez fetch failed for 5000517
+Processing complete for 2749017
+Processing complete for 4446002
+Entrez fetch failed for 5734013
+Processing complete for 6745793
+Processing complete for 4812632
+Processing complete for 6182798
+Entrez fetch failed for 9604776
+Processing complete for 4590280
+Processing complete for 8319711
+Entrez fetch failed for 11610954
+Entrez fetch failed for 3948607
+Processing complete for 6570945
+Processing complete for 11409678
+Entrez fetch failed for 8254082
+Processing complete for 5425790
+Entrez fetch failed for 4864841
+Processing complete for 5493111
+Processing complete for 8290022
+Entrez fetch failed for 7299030
+Processing complete for 10071736
+Entrez fetch failed for 10345034
+Processing complete for 7120360
+Processing complete for 4955148
+Processing complete for 7327088
+Processing complete for 7789494
+Processing complete for 8710005
+Entrez fetch failed for 5956788
+Processing complete for 4422585
+Entrez fetch failed for 7360787
+Entrez fetch failed for 11024145
+Processing complete for 6097775
+Entrez fetch failed for 1694815
+Processing complete for 10512294
+Processing complete for 8549263
+Entrez fetch failed for 11344075
+Processing complete for 4239378
+Processing complete for 11677643
+Entrez fetch failed for 5468973
+Processing complete for 5700522
+Entrez fetch failed for 5952832
+Entrez fetch failed for 6121985
+Processing complete for 3700993
+Processing complete for 10991675
+Processing complete for 11946570
+Processing complete for 4858783
+Processing complete for 9745658
+Processing complete for 4460134
+Processing complete for 7182937
+Entrez fetch failed for 8123685
+Entrez fetch failed for 3318299
+Processing complete for 5397729
+Processing complete for 10745023
+Processing complete for 6700826
+Processing complete for 4731210
+Processing complete for 5496416
+Processing complete for 4801825
+Processing complete for 6167437
+Entrez fetch failed for 9864444
+Entrez fetch failed for 3222308
+Entrez fetch failed for 6853848
+Processing complete for 3598899
+Processing complete for 3750697
+Processing complete for 9518983
+Processing complete for 1398055
+Entrez fetch failed for 2749820
+Entrez fetch failed for 3193291
+Entrez fetch failed for 5476202
+Entrez fetch failed for 7547499
+Processing complete for 4076981
+Processing complete for 10671955
+Processing complete for 10835966
+Processing complete for 3226318
+Processing complete for 10588483
+Processing complete for 4277563
+Entrez fetch failed for 2576687
+Entrez fetch failed for 10983054
+Processing complete for 7372938
+Processing complete for 6061484
+Processing complete for 10040116
+Processing complete for 10552389
+Entrez fetch failed for 3044236
+Processing complete for 5048463
+Processing complete for 5478631
+Processing complete for 4247816
+Entrez fetch failed for 6269021
+Entrez fetch failed for 10455118
+Entrez fetch failed for 9971017
+Processing complete for 6030313
+Processing complete for 7745202
+Entrez fetch failed for 7123961
+Processing complete for 8359064
+Processing complete for 5331742
+Processing complete for 10442046
+Entrez fetch failed for 4015282
+Entrez fetch failed for 8442374
+Entrez fetch failed for 5068150
+Processing complete for 4652331
+Processing complete for 11611025
+Processing complete for 4620465
+Processing complete for 8548487
+Processing complete for 8315967
+Processing complete for 3599271
+Processing complete for 7391575
+Entrez fetch failed for 3012607
+Entrez fetch failed for 10455633
+Entrez fetch failed for 8176577
+Processing complete for 11121469
+Processing complete for 4864837
+Processing complete for 5264264
+Processing complete for 5874446
+Entrez fetch failed for 8374019
+Processing complete for 4525703
+Processing complete for 3751045
+Processing complete for 5307856
+Entrez fetch failed for 8954095
+Entrez fetch failed for 9335490
+Entrez fetch failed for 4950302
+Processing complete for 4030981
+Processing complete for 9781776
+Processing complete for 7084071
+Processing complete for 4950808
+Processing complete for 4757592
+Processing complete for 6153651
+Entrez fetch failed for 7985698
+Entrez fetch failed for 8607671
+Processing complete for 9746306
+Entrez fetch failed for 5859471
+Processing complete for 8256616
+Entrez fetch failed for 4522099
+Processing complete for 7589932
+Processing complete for 9869559
+Processing complete for 5743704
+Entrez fetch failed for 11610986
+Processing complete for 8256007
+Processing complete for 4461149
+Entrez fetch failed for 8102577
+Processing complete for 11205114
+Entrez fetch failed for 8020424
+Entrez fetch failed for 6529561
+Processing complete for 10141939
+Entrez fetch failed for 7927390
+Processing complete for 12112898
+Processing complete for 8743023
+Processing complete for 3127718
+Entrez fetch failed for 8113380
+Processing complete for 8146680
+Processing complete for 5847190
+Processing complete for 8928461
+Processing complete for 4704632
+Processing complete for 5609067
+Entrez fetch failed for 3698209
+Processing complete for 6073530
+Processing complete for 8313289
+Processing complete for 11847360
+Processing complete for 3219568
+Processing complete for 11508783
+Processing complete for 7829358
+Processing complete for 6249967
+Processing complete for 3346484
+Processing complete for 4771370
+Entrez fetch failed for 9166314
+Processing complete for 12194574
+Processing complete for 3346360
+Processing complete for 6174557
+Processing complete for 6348686
+Entrez fetch failed for 4746737
+Entrez fetch failed for 10512326
+Entrez fetch failed for 5795998
+Processing complete for 219359
+Processing complete for 12072009
+Entrez fetch failed for 11610957
+Processing complete for 11636153
+Processing complete for 12176254
+Processing complete for 6927189
+Processing complete for 12105496
+Processing complete for 8704890
+Processing complete for 8671598
+Processing complete for 11610967
+Processing complete for 10134904
+Processing complete for 9020665
+Processing complete for 7544787
+Processing complete for 4715039
+Processing complete for 8778285
+Processing complete for 9174946
+Processing complete for 12010586
+Entrez fetch failed for 12112844
+Processing complete for 7570026
+Processing complete for 3384452
+Processing complete for 12028744
+Processing complete for 11708020
+Entrez fetch failed for 8461902
+Entrez fetch failed for 7607812
+Processing complete for 10570388
+Entrez fetch failed for 11411985
+Processing complete for 8148604
+Processing complete for 5908196
+Entrez fetch failed for 11633134
+Entrez fetch failed for 11046756
+Processing complete for 11508260
+Processing complete for 11027231
+Processing complete for 12174065
+Processing complete for 9518982
+Entrez fetch failed for 3979922
+Processing complete for 5469009
+Processing complete for 6424901
+Processing complete for 11466781
+Processing complete for 8395912
+Processing complete for 5683368
+Entrez fetch failed for 10670345
+Processing complete for 10407233
+Processing complete for 10612256
+Processing complete for 7729004
+Processing complete for 8466774
+Processing complete for 12029156
+Processing complete for 10685594
+Processing complete for 10732044
+Processing complete for 5696597
+Processing complete for 9900707
+Processing complete for 9244802
+Processing complete for 9159911
+Processing complete for 4390390
+Processing complete for 9888229
+Processing complete for 5725425
+Processing complete for 9431493
+Processing complete for 7894907
+Processing complete for 9118834
+Processing complete for 4528718
+Processing complete for 10978942
+Processing complete for 4227869
+Processing complete for 8725555
+Processing complete for 10197057
+Processing complete for 9113457
+Processing complete for 10364367
+Processing complete for 3209057
+Processing complete for 3275749
+Processing complete for 10790555
+Processing complete for 3753334
+Processing complete for 5009570
+Processing complete for 10170752
+Processing complete for 6691364
+Processing complete for 8033665
+Processing complete for 6430808
+Processing complete for 10770280
+Processing complete for 8912865
+Processing complete for 4567317
+Processing complete for 7101855
+Processing complete for 9578197
+Processing complete for 10887015
+Processing complete for 7412840
+Processing complete for 4864836
+Processing complete for 6696435
+Processing complete for 4282317
+Processing complete for 8487154
+Processing complete for 9765177
+Processing complete for 11580550
+Processing complete for 10612264
+Processing complete for 4062390
+Processing complete for 5865335
+Processing complete for 2708423
+Processing complete for 7110754
+Processing complete for 3811509
+Processing complete for 4173072
+Processing complete for 10991369
+Processing complete for 4206845
+Processing complete for 9706901
+Processing complete for 5806297
+Processing complete for 8542335
+Processing complete for 9239231
+Processing complete for 5831609
+Processing complete for 6204389
+Processing complete for 3930720
+Processing complete for 5223008
+Processing complete for 5628480
+Processing complete for 8513308
+Processing complete for 5289010
+Processing complete for 4706842
+Processing complete for 8966179
+Processing complete for 5913809
+Processing complete for 11265206
+Processing complete for 3341005
+Processing complete for 5052222
+Processing complete for 10858516
+Processing complete for 7072954
+Processing complete for 5397809
+Processing complete for 5588705
+Processing complete for 3917621
+Processing complete for 3183063
+Processing complete for 6734591
+Processing complete for 5002442
+Processing complete for 6026109
+Processing complete for 4924338
+Processing complete for 10472679
+Processing complete for 4850161
+Processing complete for 5879799
+Processing complete for 5177634
+Processing complete for 8877461
+Processing complete for 7118919
+Processing complete for 11678864
+Processing complete for 5607079
+Processing complete for 5000517
+Processing complete for 9288086
+Processing complete for 5734013
+Processing complete for 9604776
+Processing complete for 11610954
+Processing complete for 3948607
+Processing complete for 8254082
+Processing complete for 4864841
+Processing complete for 7299030
+Processing complete for 10345034
+Processing complete for 5956788
+Processing complete for 7360787
+Processing complete for 11024145
+Processing complete for 1694815
+Processing complete for 11344075
+Processing complete for 5952832
+Processing complete for 5468973
+Processing complete for 6121985
+Processing complete for 8123685
+Processing complete for 3318299
+Processing complete for 3165376
+Processing complete for 9864444
+Processing complete for 3222308
+Processing complete for 3193291
+Processing complete for 2749820
+Processing complete for 6853848
+Processing complete for 2576687
+Processing complete for 7547499
+Processing complete for 5476202
+Processing complete for 10983054
+Processing complete for 3044236
+Processing complete for 6269021
+Processing complete for 10455118
+Processing complete for 9971017
+Processing complete for 7123961
+Processing complete for 8442374
+Processing complete for 5068150
+Processing complete for 3012607
+Processing complete for 4015282
+Processing complete for 10455633
+Processing complete for 8374019
+Processing complete for 8176577
+Processing complete for 8954095
+Processing complete for 9335490
+Processing complete for 4950302
+Processing complete for 8607671
+Processing complete for 7985698
+Processing complete for 5859471
+Processing complete for 4522099
+Processing complete for 11610986
+Processing complete for 8102577
+Processing complete for 8020424
+Processing complete for 6529561
+Processing complete for 7927390
+Processing complete for 8113380
+Processing complete for 3698209
+Processing complete for 9166314
+Processing complete for 4746737
+Processing complete for 10512326
+Processing complete for 12112844
+Processing complete for 11610957
+Processing complete for 8461902
+Entrez fetch failed for 7607812
+Processing complete for 11633134
+Processing complete for 5795998
+Processing complete for 11046756
+Processing complete for 11411985
+Processing complete for 3979922
+Processing complete for 10670345
+Processing complete for 7607812
+Processing done
+Processing errors: []
+Mining completed! [416/416]
+Generating report graphs...
+Generating PDF graphs...
+Report ready!
+:)

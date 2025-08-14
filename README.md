@@ -15,12 +15,13 @@ Key features:
 - Parses complete articles from PubMed Central (Open Access subset)
 - Ranks results using a customizable scoring algorithm
 - Clean and intuitive GUI (built with Tkinter)
+- Summarization of articles using Sumy with LexRank algorithm
+- Biomedical entity extraction (genes, proteins, diseases, chemicals, cells, organisms, tissues, pathways) using SciSpaCy and *en_ner_bionlp13cg_md* model
 - Generates reports in PDF format with summary figures
-- **No installation required** – ready-to-use executables for all platforms
 
 ### Installation 
 
-*HERMES* requires no installation. Executable for all platforms are available in [latest release](https://github.com/julien-charest/hermes/releases). Alternatively, *HERMES* can be run from source:
+To install *HERMES*:
 
 ```r
 # Clone the repository:
@@ -28,7 +29,10 @@ git clone https://github.com/julien-charest/hermes.git
 cd hermes
 
 # Install dependencies manually:
-pip install biopython pandas beautifulsoup4 fpdf lxml
+pip install biopython pandas beautifulsoup4 fpdf lxml matplotlib sumy nltk spacy scispacy requests
+
+# Download scispacy model:
+pip install https://s3.amazonaws.com/allenai-scispacy/models/en_ner_bionlp13cg_md-0.5.0.tar.gz
 
 # Run the application:
 python ./hermes.py
