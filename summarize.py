@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-# Written by Julien Charest
+
+####################################################################
+# Hermes v1.1 - Open-source mining tool for open-access literature #
+# 2025-08-14                                                       #
+# Written by Julien Charest & Katarina Priselac                    #
+####################################################################
 
 from Bio import Entrez, Medline
 from bs4 import BeautifulSoup as bs

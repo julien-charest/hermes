@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-# Hermes v1.1
-# 2025-08-11
-# Written by Julien Charest & Katarina Priselac
+####################################################################
+# Hermes v1.1 - Open-source mining tool for open-access literature #
+# 2025-08-14                                                       #
+# Written by Julien Charest & Katarina Priselac                    #
+####################################################################
 
 from os import path, getcwd
 import sys
