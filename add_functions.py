@@ -162,6 +162,6 @@ def graph_stats_summary(dataframe, request_id, dir):
 def filter_string(string):
     new_string = ""
     for i in string:
-        if i in "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".upper() + " 123456789.:,;.()!?=-+/":
+        if i in "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".upper() + " 123456789.:,;.()!?=-+/%":
             new_string += i
     return str(new_string)

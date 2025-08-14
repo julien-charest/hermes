@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Hermes v1.0
+# Hermes v1.1
 # 2025-08-11
 # Written by Julien Charest & Katarina Priselac
 
@@ -19,9 +19,11 @@ import pandas as pd
 import math
 from bs4 import BeautifulSoup as bs
 import add_functions as af
+import summarize as summarize
 from fpdf import FPDF
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from queue import SimpleQueue
 import random
 
 # Defining number of threads (max 3 requests/sec to avoid flagging by Entrez)
@@ -109,12 +111,18 @@ def nresults_button():
 # Validating User Input
 def submit_query():
     if request_title_ok.get() and email_ok.get() and terms_ok.get() and keywords_ok.get() and nresults_ok.get():
+        submit_button.config(state="disabled")
         submit_label["text"] = "Please wait..."
         progress_label0["text"] = ""
         progress_label["text"] = ""
         progress_label2["text"] = ""
         my_dir.set(filedialog.askdirectory())
-        launch_script()
+        try:
+            launch_script()
+        finally:
+            submit_button.config(state="normal")
+            window.destroy()
+            sys.exit(0)
     else:
         submit_label["text"] = "Invalid query. Please revise query arguments."
 
@@ -144,14 +152,6 @@ sys.setrecursionlimit(int(100000))
 ####################
 
 def literature_miner(request_title, email, terms, keywords_temp, mandatory, nresults):
-
-    n_parsed = 0
-
-    # Setting Up Progress Bar
-    def progress():
-        progress_bar["value"] = 100 * (n_parsed/int(hits))
-        progress_label["text"] = "Mining [{i}/{hits}]...".format(i = i, hits = int(hits))
-        window.update()
 
     # Processing User Input
     request = request_title
@@ -223,7 +223,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
             return None
     
     # Initiating Result Dataframe
-    stats_df = pd.DataFrame(columns = ["PMID", "Title", "Year", "Associated Keywords", "Citations", "Keywords Count", "Score"])
+    stats_df = pd.DataFrame(columns = ["PMCID", "PMID", "Title", "Year", "Associated Keywords", "Citations", "Keywords Count", "Score"])
 
     # Mining Full PMC Article
     def process_pmcid(pmcid):
@@ -266,7 +266,6 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
                         abstract = abstract.find("p").get_text()
             else:
                 abstract = "NA"
-
 
         # Getting PMID
         article_ids = bs_record.find_all('article-id')
@@ -316,7 +315,8 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
             f.write("Processing complete for {pmcid}\n".format(pmcid = pmcid))
 
         # Return Article Mining Results
-        return {"PMID": pmid,
+        return {"PMCID": pmcid,
+                "PMID": pmid,
                 "Title": article_title,
                 "Year": int(pub_year),
                 "Journal": journal_title,
@@ -333,8 +333,14 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
 
     # Initiating Data Request Errors List
     errors = []
-
+    
     # Multi-treaded Executor
+    n_parsed = 0
+    progress_bar.configure(mode='determinate', maximum=len(id_list), value=0)
+    progress_label["text"] = "Mining in progress... [0/{total}]".format(total = len(id_list))
+    progress_bar.update_idletasks()
+    progress_label.update_idletasks()
+
     with ThreadPoolExecutor(max_workers) as executor:
         futures = {executor.submit(process_pmcid, pmcid): pmcid for pmcid in id_list}
         for future in as_completed(futures):
@@ -344,9 +350,10 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
             else:
                 results.append(result)
                 n_parsed += 1
-                progress_bar["value"] = (n_parsed / len(id_list)) * 100
-                progress_label["text"] = "Mining in progress [{n_parsed}/{hits}]...".format(n_parsed = n_parsed, hits = len(id_list))
-                window.update()
+                progress_bar["value"] = n_parsed
+                progress_label["text"] = "Mining in progress... [{n_parsed}/{total}]".format(n_parsed = n_parsed, total = len(id_list))
+                progress_bar.update_idletasks()
+                progress_label.update_idletasks()
     
     # Initiating Retry Counter
     retry_count = 0
@@ -367,9 +374,10 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
                 else:
                     results.append(result)
                     n_parsed += 1
-                    progress_bar["value"] = (n_parsed / len(id_list)) * 100
-                    progress_label["text"] = "Mining in progress [{n_parsed}/{hits}]...".format(n_parsed = n_parsed, hits = len(id_list))
-                    window.update()    
+                    progress_bar["value"] = n_parsed
+                    progress_label["text"] = "Mining in progress... [{n_parsed}/{total}]".format(n_parsed = n_parsed, total = len(id_list))
+                    progress_bar.update_idletasks()
+                    progress_label.update_idletasks()   
         errors = errors_temp
         retry_count += 1
 
@@ -384,7 +392,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
 
     # Generating statistics for query
     hits = int(hits)
-    results_df = results_df.drop_duplicates(subset=["PMID"])
+    results_df = results_df.drop_duplicates(subset=["PMCID"])
     parsed = len(results_df)
     progress_label["text"] = "Mining completed! [{succes}/{hits}]".format(succes = parsed, hits = hits)
     with open(log_file, 'a') as f:
@@ -409,7 +417,31 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     results_df = results_df.sort_values(by = "Score", ascending=False).reset_index(drop = True)
     if len(results_df) > nresults:
         results_df = results_df.head(nresults)
-    combined_df = pd.concat([stats_df, results_df], ignore_index=True)
+
+    # Generating AI Summary for Top Results with Multi-treaded Executor
+    summaries = []
+    n_summarized = 0
+    progress_bar.configure(mode='determinate', maximum=len(results_df), value=0)
+    progress_label2["text"] = "Summarizing top results... [0/{total}]".format(total = len(results_df))
+    progress_bar.update_idletasks()
+    progress_label2.update_idletasks()
+
+    with ThreadPoolExecutor(3) as executor:
+        futures = {executor.submit(summarize.summarize_article, results_df.loc[i, "PMCID"]): results_df.loc[i, "PMCID"] for i in range(len(results_df))}
+        for future in as_completed(futures):
+            result = future.result()
+            if "error" in result:
+                summaries.append(result["error"])
+            else:
+                summaries.append(result)
+                n_summarized += 1
+                progress_bar["value"] = n_summarized
+                progress_label2["text"] = "Summarizing top results... [{n_summarized}/{total}]".format(n_summarized = n_summarized, total = len(results_df))
+                progress_bar.update_idletasks()
+                progress_label2.update_idletasks()
+    
+    summaries_df = pd.DataFrame(summaries, columns=["PMCID", "Summary"])
+    results_df = results_df.merge(summaries_df, on="PMCID", how="left")
 
     # Generating the PDF report
     class PDF_Report(FPDF):
@@ -424,10 +456,10 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
         def header(self):
             self.set_font(self.font, '', 10)
             self.cell(w=(self.pw/3), h=self.height, txt="", border=self.line_thickness, ln=0, align='L')
-            self.cell(w=(self.pw/3), h=self.height, txt='Hermes (v1.0) - Literature Mining Report', border=self.line_thickness, ln=0, align = 'C')
+            self.cell(w=(self.pw/3), h=self.height, txt='Hermes (v1.1) - Literature Mining Report', border=self.line_thickness, ln=0, align = 'C')
             self.cell(w=(self.pw/3), h=self.height, txt="{date}".format(date = date), border=self.line_thickness, ln=1, align = "R")
             self.image(logo_path, 10, 8, 35)
-            self.ln(2)
+            self.ln(5)
 
         def footer(self):
             self.set_y(-15)
@@ -441,7 +473,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     window.update()
     pdf = PDF_Report()
     pdf.add_page()
-    pdf.ln(1)
+    #pdf.ln(1)
     pdf.set_font(pdf.font, 'B', 24)
     pdf.cell(w=pdf.pw, h=25, txt="Literature Mining Report", border=pdf.line_thickness, ln=1, align='C')
     pdf.set_font(pdf.font, 'B', 12)
@@ -455,11 +487,11 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     pdf.image("{figures_dir}/{request}_pubyears.png".format(figures_dir = figures_dir, request = request), w = pdf.pw)
     pdf.image("{figures_dir}/{request}_asskeywords.png".format(figures_dir = figures_dir, request = request), w = pdf.pw)
     pdf.add_page()
-    pdf.ln(3)
+    pdf.ln(2)
     pdf.image("{figures_dir}/{request}_stats_summary.png".format(figures_dir = figures_dir, request = request), w = pdf.pw)
 
     ## Generating the top 25 result table
-    pdf.ln(3)
+    pdf.ln(2)
     ### Generating the table header
     pdf.set_font(pdf.font, 'B', 10)
     pdf.cell(w=pdf.pw, h=5, txt="Query Results", border=pdf.line_thickness, ln=1, align='C')
@@ -496,14 +528,14 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     ## Generating long reports
     counter = 1
     pdf.add_page()
-    pdf.ln(1)
     for i in range(len(results_df)):
-        if counter > 2:
+        if counter > 1:
             pdf.add_page()
             pdf.ln(3)
             counter = 1
         pdf.set_font(pdf.font, 'B', 10)
-        pdf.cell(w=pdf.pw, h=5, txt="Query Result {i}/{len_results}".format(i = i + 1, len_results = len(results_df)), border=pdf.line_thickness, ln=1, align='L')
+        pdf.cell(w=pdf.pw, h=5, txt="Query Result {i}/{len_results}".format(i = i + 1, len_results = len(results_df)), border=pdf.line_thickness, align='L')
+        pdf.ln(5)
         pdf.set_font(pdf.font, '', 10)
         pdf.multi_cell(w=pdf.pw, h=5, txt=af.filter_string(results_df["Title"][i]), border=pdf.line_thickness, align='L')
         pdf.set_font(pdf.font, '', 9)
@@ -517,8 +549,37 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
         pdf.cell(w=(4*pdf.pw/30), h= 5, txt="Score: {score}".format(score = "{:.2f}".format(results_df["Score"][i])), border=pdf.line_thickness, ln=1, align='L')
         pdf.cell(w=(4*pdf.pw/30), h= 5, txt=af.filter_string("Keywords hits: {keywords}".format(keywords = results_df["Keywords Count"][i])), border=pdf.line_thickness, ln=1, align='L')
         pdf.ln(2)
+        pdf.set_font(pdf.font, 'B', 8)
+        pdf.cell(w=pdf.pw, h=5, txt="Abstract:", border=pdf.line_thickness, align='L')
+        pdf.ln(4)
+        pdf.set_font(pdf.font, '', 8)
         pdf.multi_cell(w=pdf.pw, h=5, txt=af.filter_string(results_df["Abstract"][i]), border=pdf.line_thickness, align='L')
-        pdf.ln(7)
+        pdf.ln(2)
+        pdf.set_font(pdf.font, 'B', 8)
+        pdf.cell(w=pdf.pw, h=5, txt="Summary:", border=pdf.line_thickness, align='L')
+        pdf.ln(4)
+        pdf.set_font(pdf.font, '', 8)
+        pdf.multi_cell(w=pdf.pw, h=5, txt=af.filter_string(results_df["Summary"][i][0]), border=pdf.line_thickness, align='L')
+        pdf.ln(2)
+        pdf.set_font(pdf.font, 'B', 8)
+        pdf.cell(w=pdf.pw, h=5, txt="Mentioned biomedical entities:", border=pdf.line_thickness, align='L')
+        pdf.ln(4)
+        pdf.set_font(pdf.font, '', 8)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Genes: " + af.filter_string(results_df["Summary"][i][1]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Proteins: " + af.filter_string(results_df["Summary"][i][2]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Diseases: " + af.filter_string(results_df["Summary"][i][3]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Chemicals: " + af.filter_string(results_df["Summary"][i][4]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Cells: " + af.filter_string(results_df["Summary"][i][5]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Organisms: " + af.filter_string(results_df["Summary"][i][6]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Tissues: " + af.filter_string(results_df["Summary"][i][7]), border=pdf.line_thickness, align='L')
+        pdf.ln(1)
+        pdf.multi_cell(w=pdf.pw, h=5, txt="Pathways: " + af.filter_string(results_df["Summary"][i][8]), border=pdf.line_thickness, align='L')
         counter += 1
 
     # Creating the output PDF report
@@ -536,7 +597,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
 window = tk.Tk()
 window.minsize(1000, 650)
 window.configure(bg='white')
-window.title("Hermes (v1.0) - Open Source Literature Mining")
+window.title("Hermes (v1.1) - Open Source Literature Mining")
 style = ttk.Style(window)
 style.theme_use('default')
 style.configure("custom.Horizontal.TProgressbar", troughcolor='white', background='#1F4063', thickness=20)
