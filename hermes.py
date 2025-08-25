@@ -2,7 +2,7 @@
 
 ####################################################################
 # Hermes v1.1 - Open-source mining tool for open-access literature #
-# 2025-08-14                                                       #
+# 2025-08-25                                                       #
 # Written by Julien Charest & Katarina Priselac                    #
 ####################################################################
 
@@ -10,7 +10,6 @@ from os import path, getcwd
 import sys
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
-import threading
 import time
 import tkinter as tk
 from tkinter import ttk, filedialog
@@ -25,7 +24,6 @@ import summarize as summarize
 from fpdf import FPDF
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from queue import SimpleQueue
 import random
 
 #####################
@@ -153,6 +151,9 @@ sys.setrecursionlimit(int(100000))
 def literature_miner(request_title, email, terms, keywords_temp, mandatory, nresults):
 
     # Processing User Input
+    hermes_mode="(Default Mode)"
+    if mandatory:
+        hermes_mode="(Strict Mode)"
     request = request_title
     email = email
     terms = terms
@@ -414,6 +415,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
 
     # Keeping Top Results for Report
     results_df = results_df.sort_values(by = "Score", ascending=False).reset_index(drop = True)
+    results_df = results_df[results_df["Score"] > 0]
     if len(results_df) > nresults:
         results_df = results_df.head(nresults)
 
@@ -481,7 +483,7 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
     pdf.cell(w=pdf.pw, h=5, txt="Query date: {date}".format(date = date), border=pdf.line_thickness, ln=1, align='L')
     pdf.multi_cell(w=pdf.pw, h=5, txt='Query terms: "{terms}"'.format(terms = terms), border=pdf.line_thickness, align='L')
     pdf.cell(w=pdf.pw, h=5, txt='Articles parsed/hits: {parsed}/{hits} ({percentage}%)'.format(parsed = int(parsed), hits = int(hits), percentage = "{:.2f}".format(parsed*100/hits)), border=pdf.line_thickness, ln=1, align='L')
-    pdf.cell(w=pdf.pw, h=5, txt='Scoring keywords: {keywords}'.format(keywords = ", ".join(keywords)), border=pdf.line_thickness, ln=1, align='L')
+    pdf.cell(w=pdf.pw, h=5, txt='Scoring keywords: {keywords} {mode}'.format(keywords = ", ".join(keywords), mode = hermes_mode), border=pdf.line_thickness, ln=1, align='L')
     pdf.ln(3)
     pdf.image("{figures_dir}/{request}_pubyears.png".format(figures_dir = figures_dir, request = request), w = pdf.pw)
     pdf.image("{figures_dir}/{request}_asskeywords.png".format(figures_dir = figures_dir, request = request), w = pdf.pw)
@@ -561,6 +563,14 @@ def literature_miner(request_title, email, terms, keywords_temp, mandatory, nres
         pdf.multi_cell(w=pdf.pw, h=5, txt=af.filter_string(results_df["Summary"][i][0]), border=pdf.line_thickness, align='L')
         pdf.ln(2)
         pdf.set_font(pdf.font, 'B', 8)
+        pdf.cell(w=pdf.pw, h=5, txt="Figures:", border=pdf.line_thickness, align='L')
+        pdf.ln(4)
+        pdf.set_font(pdf.font, '', 8)
+        for j in range(len(results_df["Summary"][i][9])):
+            pdf.multi_cell(w=pdf.pw, h=5, txt="Figure {j}: ".format(j = j+1) + af.filter_string(results_df["Summary"][i][9][j]), border=pdf.line_thickness, align='L')
+            pdf.ln(1)
+        pdf.ln(1)
+        pdf.set_font(pdf.font, 'B', 8)
         pdf.cell(w=pdf.pw, h=5, txt="Mentioned biomedical entities:", border=pdf.line_thickness, align='L')
         pdf.ln(4)
         pdf.set_font(pdf.font, '', 8)
@@ -619,7 +629,7 @@ request_title = tk.StringVar(master = window, value = None)
 request_title_ok = tk.BooleanVar(master = window, value = False)
 title_text = tk.Label(master = frame, text = "Enter request title:", bg='white', fg='black')
 title_text.grid(row=3, column=0, sticky="w", pady=(15,0))
-greeting_title_1 = tk.Label(master = frame, text = "Specify a unique request title for report generation (e.g. 'lsy-6_report'). Reusing a title will overwrite the existing report.", bg='white', fg='black')
+greeting_title_1 = tk.Label(master = frame, text = "Specify a unique request title for report generation (e.g. 't.reesei_cellulases'). Reusing a title will overwrite the existing report.", bg='white', fg='black')
 greeting_title_1.grid(row=4, column=0, sticky="w")
 title_frame = tk.Frame(frame, bg="white")
 title_frame.grid(row=5, column=0, sticky="w")
@@ -651,7 +661,7 @@ terms = tk.StringVar(master = window, value = None)
 terms_ok = tk.BooleanVar(master = window, value = False)
 terms_text = tk.Label(master = frame, text = "Enter query terms:", bg='white', fg='black')
 terms_text.grid(row=9, column=0, sticky="w", pady=(10,0))
-terms_text_2 = tk.Label(master = frame, text = "Define your Pubmed query (e.g. 'neuronal asymmetry c elegans'). PubMed filters are supported (https://pubmed.ncbi.nlm.nih.gov/help/#help-filters).", bg='white', fg='black')
+terms_text_2 = tk.Label(master = frame, text = "Define your Pubmed query (e.g. 'cellulase production trichoderma reesei'). PubMed filters are supported (https://pubmed.ncbi.nlm.nih.gov/help/#help-filters).", bg='white', fg='black')
 terms_text_2.grid(row=10, column=0, sticky="w")
 terms_frame = tk.Frame(frame, bg="white")
 terms_frame.grid(row=11, column=0, sticky="w")
@@ -667,7 +677,7 @@ keywords_temp = tk.StringVar(master = window, value = None)
 keywords_ok = tk.BooleanVar(master = window, value = False)
 keywords_text = tk.Label(master = frame, text = "Enter scoring keywords:", bg='white', fg='black')
 keywords_text.grid(row=12, column=0, sticky="w", pady=(10,0))
-keywords_text_2 = tk.Label(master = frame, text = "Define keywords for article scoring (eg. 'ASE, lsy-6, asymmetry').", bg='white', fg='black')
+keywords_text_2 = tk.Label(master = frame, text = "Define keywords for article scoring (e.g. 'cellulase, reesei, cbh1, xyr1').", bg='white', fg='black')
 keywords_text_2.grid(row=13, column=0, sticky="w")
 keywords_frame = tk.Frame(frame, bg="white")
 keywords_frame.grid(row=14, column=0, sticky="w")

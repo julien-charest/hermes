@@ -2,7 +2,7 @@
 
 ####################################################################
 # Hermes v1.1 - Open-source mining tool for open-access literature #
-# 2025-08-14                                                       #
+# 2025-08-25                                                       #
 # Written by Julien Charest & Katarina Priselac                    #
 ####################################################################
 
@@ -167,6 +167,6 @@ def graph_stats_summary(dataframe, request_id, dir):
 def filter_string(string):
     new_string = ""
     for i in string:
-        if i in "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".upper() + " 123456789.:,;.()!?=-+/%":
+        if i in "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".upper() + " 0123456789.:,;.()!?=-+/%":
             new_string += i
     return str(new_string)

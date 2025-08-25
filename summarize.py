@@ -2,7 +2,7 @@
 
 ####################################################################
 # Hermes v1.1 - Open-source mining tool for open-access literature #
-# 2025-08-14                                                       #
+# 2025-08-25                                                       #
 # Written by Julien Charest & Katarina Priselac                    #
 ####################################################################
 
@@ -14,21 +14,21 @@ from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
 import nltk
+from nltk.tokenize import sent_tokenize
 import spacy
 import re
 import requests
-import pandas as pd
 
-# Getting nltk model for sumy
+# Getting NLTK Punkt Model for Sumy
 try:
     nltk.data.find("tokenizers/punkt")
 except LookupError:
     nltk.download("punkt")
 
-# Dealing with SpaCy
+# Loading Spacy Model
 nlp = spacy.load("en_ner_bionlp13cg_md")
 
-# Fetch Record Function (already in app)
+# Fetch Record
 def fetch_record(pmcid):
         try:
             time.sleep(random.uniform(0.3, 0.5))
@@ -37,52 +37,30 @@ def fetch_record(pmcid):
             return record
         except Exception as e:
             return None
-        
+
+# Summarizes Article Main Text
 def summarize_text(text, sentence_count=5):
     parser = PlaintextParser.from_string(text, Tokenizer("english"))
     summarizer = LexRankSummarizer()
     summary = summarizer(parser.document, sentence_count)
-    # Join summary sentences
-    return " ".join(remove_citations_and_figures(str(sentence)) for sentence in summary)
+    return " ".join(cleaning_summary(str(sentence)) for sentence in summary)
 
-def remove_citations_and_figures(text):
-    # Remove all parentheses with citations or figure refs
+# Cleaning Main Text Summary
+def cleaning_summary(text):
     cleaned_text = re.sub(r'\([^()]*?\)', '', text)
-
-    # Remove "Figure <number>" and related figure labels/captions appearing in-line
     cleaned_text = re.sub(r'\b(Figure|Fig\.?)\s*\d+[A-Za-z]*[^.]*', '', cleaned_text, flags=re.IGNORECASE)
-
-    # Remove extra spaces leftover from removals
     cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
-
-    # Fix spaces before punctuation (like before commas, periods)
     cleaned_text = re.sub(r'\s+([.,;:])', r'\1', cleaned_text)
-
-    # Add a space after periods or commas if missing (glued sentences)
     cleaned_text = re.sub(r'([.,;:])([A-Za-z])', r'\1 \2', cleaned_text)
-
-    # Remove stray semicolons leftover
     cleaned_text = re.sub(r';', '', cleaned_text)
-
-    # Fix double periods
     cleaned_text = re.sub(r'\.\.+', '.', cleaned_text)
-
-    # Add space between a lowercase/period/comma and an uppercase word without space (likely glued titles)
     cleaned_text = re.sub(r'([a-z0-9\.,])([A-Z][a-z]+)', r'\1 \2', cleaned_text)
-
-    # Fix missing space after commas before uppercase letters (e.g. "NH4,Cl" -> "NH4, Cl")
     cleaned_text = re.sub(r',([A-Z])', r', \1', cleaned_text)
-
-    # Add space after question marks or exclamation marks if glued to the next word
     cleaned_text = re.sub(r'([?!])([A-Za-z])', r'\1 \2', cleaned_text)
-
-    # Add space after lowercase or digit followed directly by uppercase (e.g., 'identity?Below' or 'neuronThe')
-    cleaned_text = re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', cleaned_text)
-
     cleaned_text = cleaned_text[0].upper() + cleaned_text[1:]
-
     return cleaned_text
 
+# Flatten NER Output List
 def flatten_list(lst):
     flat = []
     for item in lst:
@@ -92,93 +70,149 @@ def flatten_list(lst):
             flat.append(item)
     return flat
 
+# Validate Gene with MyGene.info
 def validate_gene(gene):
-    #Validate gene name in MyGene.info
-    url = "http://mygene.info/v3/query"
-    params = {"q": f"symbol:{gene}", "species": "all", "size": 1}
-    r = requests.get(url, params=params)
-    if r.status_code != 200:
-        return False
-    data = r.json()
-    return len(data.get("hits", [])) > 0
+    q = gene.strip()
 
+    try:
+        r = requests.get("https://mygene.info/v3/query", params={"q": f"symbol:{q}", "species": "all", "size": 10, "fields": "symbol"}, timeout=8)
+        r.raise_for_status()
+        hits = r.json().get("hits", []) or []
+    except requests.RequestException:
+        return False
+
+    q_lower = q.lower()
+    for h in hits:
+        sym = (h.get("symbol") or "").strip()
+        if sym.lower() == q_lower:
+            return True
+    return False
+
+# Validate Protein with MyGene.info
 def validate_protein(protein):
-    # Validate protein name or UniProt ID in MyGene.info
-    url = "http://mygene.info/v3/query"
-    params = {"q": f"uniprot:{protein} OR symbol:{protein}", "species": "all", "size": 1}
-    r = requests.get(url, params=params)
+    q = protein.strip()
+    r = requests.get("http://mygene.info/v3/query", params={"q": f"uniprot:{q} OR symbol:{q}", "species": "all", "size": 10}, timeout=8)
     if r.status_code != 200:
         return False
     data = r.json()
     return len(data.get("hits", [])) > 0
 
+# Validate Disease with MyDisease.info
 def validate_disease(disease):
-    # Validate a disease name or identifier using MyDisease.info
-    url = "http://mydisease.info/v1/query"
-    params = {"q": disease, "size": 1}
-    r = requests.get(url, params=params)
+    q = disease.strip()
+    r = requests.get("http://mydisease.info/v1/query", params={"q": q, "size": 10}, timeout=8)
     if r.status_code != 200:
         return False
     data = r.json()
     return len(data.get("hits", [])) > 0
 
+# Validate Chemical with MyChemical.info
 def validate_chemical(chemical):
-    # Validate a chemical name or identifier using MyChem.info
-    url = "https://mychem.info/v1/query"
-    params = {"q": chemical, "size": 1}
-    r = requests.get(url, params=params)
+    q = chemical.strip()
+    r = requests.get("https://mychem.info/v1/query", params={"q": q, "size": 10}, timeout=8)
     if r.status_code != 200:
         return False
     data = r.json()
     return len(data.get("hits", [])) > 0
 
+# Validate Cell with EBI OLS4
 def validate_cell(cell):
-    # Validate a cell / cell line name or ID using EBI OLS4 (CL, CLO, EFO)
-    url = "https://www.ebi.ac.uk/ols4/api/search"
-    params = {"q": cell, "ontology": "cl,clo,efo", "rows": 1}
-    r = requests.get(url, params=params, timeout=8)
-    if r.status_code != 200:
-        return False
+    q = cell.strip()
     try:
-        data = r.json()
-    except ValueError:
+        r = requests.get("https://www.ebi.ac.uk/ols4/api/search", params={"q": q, "ontology": "cl,clo", "rows": 25, "queryFields": "label,synonym,obo_id,short_form"}, timeout=8)
+        r.raise_for_status()
+        docs = r.json().get("response", {}).get("docs", []) or []
+    except Exception:
         return False
-    return (data.get("response", {}).get("numFound", 0) > 0)
 
+    for d in docs:
+        if d.get("is_obsolete") or d.get("type") != "class":
+            continue
+        label = (d.get("label") or "").strip().lower()
+        if label == q:
+            return True
+        for syn in d.get("synonym") or []:
+            if (syn or "").strip().lower() == q:
+                return True
+    return False
+
+# Validate Organism with NCBI and EBI OLS4
 def validate_organism(organism):
-    # Validate an organism name or taxonomy ID using MyGene.info
-    url = "https://mygene.info/v3/query"
-    params = {"q": organism, "species": "all", "size": 1, "fields": "taxid,name,other_names"
-    }
-    r = requests.get(url, params=params)
-    if r.status_code != 200:
-        return False
-    data = r.json()
-    return len(data.get("hits", [])) > 0
 
+    _ABBR = re.compile(r"^([A-Z])\.\s*([a-z]+)$")
+
+    q = organism.strip()
+
+    if q.isdigit():
+        r = requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params={"db":"taxonomy","term":f"{q}[TaxID]","retmode":"json","retmax":1}, timeout=8)
+        return r.ok and int(r.json().get("esearchresult", {}).get("count", "0")) > 0
+
+    qn = q.lower()
+    r = requests.get("https://www.ebi.ac.uk/ols4/api/search", params={"q": q, "ontology": "ncbitaxon", "rows": 50, "queryFields": "label,synonym"}, timeout=8)
+    if r.ok:
+        for d in r.json().get("response", {}).get("docs", []):
+            if d.get("type") != "class" or d.get("is_obsolete"):
+                continue
+            label = (d.get("label") or "").strip().lower()
+            if label == qn:
+                return True
+            for syn in d.get("synonym") or []:
+                if (syn or "").strip().lower() == qn:
+                    return True
+
+    m = _ABBR.match(q)
+    if m:
+        g_init, species = m.groups()
+        r = requests.get("https://www.ebi.ac.uk/ols4/api/search", params={"q": species, "ontology": "ncbitaxon", "rows": 100, "queryFields": "label"}, timeout=8)
+        if r.ok:
+            for d in r.json().get("response", {}).get("docs", []):
+                if d.get("type") != "class" or d.get("is_obsolete"):
+                    continue
+                parts = (d.get("label") or "").split()
+                if len(parts) >= 2 and parts[0][:1].upper() == g_init and parts[1].lower() == species:
+                    return True
+
+    if " " not in q:
+        r = requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params={"db":"taxonomy","term":f'"{q}"[Common Name]',"retmode":"json","retmax":1}, timeout=8)
+        if r.ok and int(r.json().get("esearchresult", {}).get("count", "0")) > 0:
+            return True
+        
+    return False
+
+# Validate Tissue with EBI OLS4
 def validate_tissue(tissue):
-    # Validate a tissue / anatomical structure using EBI OLS4 (UBERON, BTO, FMA)
-    url = "https://www.ebi.ac.uk/ols4/api/search"
-    params = {"q": tissue, "ontology": "uberon,bto,fma", "rows": 1}
-    r = requests.get(url, params=params, timeout=8)
-    if r.status_code != 200:
-        return False
-    try:
-        data = r.json()
-    except ValueError:
-        return False
-    return (data.get("response", {}).get("numFound", 0) > 0)
+    q = tissue.strip()
+    q_lower = q.lower()
 
+    try:
+        r = requests.get("https://www.ebi.ac.uk/ols4/api/search", params={"q": q, "ontology": "uberon,bto,fma", "rows": 25, "queryFields": "label,synonym,obo_id,short_form"}, timeout=8)
+        r.raise_for_status()
+        docs = r.json().get("response", {}).get("docs", []) or []
+    except Exception:
+        return False
+
+    for d in docs:
+        if d.get("is_obsolete") or d.get("type") != "class":
+            continue
+        label = (d.get("label") or "").strip().lower()
+        if label == q_lower:
+            return True
+        for syn in d.get("synonym") or []:
+            if (syn or "").strip().lower() == q_lower:
+                return True
+            
+    return False
+
+# Validate Pathway with MyPathway.info
 def validate_pathway(pathway):
-    # Validate a pathway name or identifier using MyPathway.info
-    url = "https://mypathway.info/v1/query"
-    params = {"q": pathway, "size": 1}
-    r = requests.get(url, params=params)
+    q = pathway.strip()
+    r = requests.get("https://mypathway.info/v1/query", params={"q": q, "size": 10}, timeout=8)
     if r.status_code != 200:
         return False
     data = r.json()
     return len(data.get("hits", [])) > 0
 
+# Summarizing Article (Sumy) and NER (Spacy) for Article Report
 def summarize_article(pmcid):
      
     record = fetch_record(pmcid)
@@ -193,7 +227,57 @@ def summarize_article(pmcid):
     references_pos = str(bs_record).find("<title>References</title>")
     if references_pos == -1:
         references_pos = str(bs_record).lower().find("<title>References".lower())
-    article = bs(str(bs_record)[introduction_pos:references_pos], "lxml").get_text()
+    article = bs(str(bs_record)[introduction_pos:references_pos], "lxml")
+
+    # Getting Figure Legends
+    figs_text = []
+    figs = article.find_all("fig")
+
+    for fig in figs:
+        title = fig.find("title")
+
+        if title:
+            figs_text.append(title.get_text(strip=True))
+    
+        else:
+            ps = fig.find_all("p")
+
+            if not ps:
+                figs_text.append("NA")
+
+            elif len(ps) == 1:
+                text = ps[0].get_text(" ", strip=True)
+                sentences = sent_tokenize(text)
+                figs_text.append(sentences[0] if sentences else text)
+
+            else:
+                figs_text.append(ps[0].get_text(strip=True))
+
+    # Remove Figures from Article
+    for fig in article.find_all("fig"):
+        fig.decompose()
+
+    # Remove Tables from Article
+    for table in article.find_all("table-wrap"):
+        table.decompose()
+    for table in article.find_all("table"):
+        table.decompose()
+
+    # Remove Titles from Article
+    for title in article.find_all("title"):
+        title.decompose()
+
+    # Remove References from Article
+    for reference in article.find_all("xref"):
+        reference.decompose()
+    for reference in article.find_all("ref"):
+        reference.decompose()
+
+    # Remove Supplementary Material from Article
+    for suppl in article.find_all("supplementary-material"):
+        suppl.decompose()
+
+    article = article.get_text()
 
     summary = summarize_text(article, sentence_count=5)
     if len(summary) < 1:
@@ -274,6 +358,6 @@ def summarize_article(pmcid):
     else:
         pathways = ", ".join(sorted(pathways))
 
-    results = [pmcid, [summary, gene_names, proteins, diseases, chemicals, cells, organisms, tissues, pathways]]
+    results = [pmcid, [summary, gene_names, proteins, diseases, chemicals, cells, organisms, tissues, pathways, figs_text]]
 
     return results
