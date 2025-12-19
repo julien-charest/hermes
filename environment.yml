@@ -1,0 +1,45 @@
+name: hermes
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11
+
+  # Core libs
+  - biopython
+  - pandas
+  - numpy
+  - requests
+
+  # Parsing / plotting / GUI
+  - beautifulsoup4
+  - lxml
+  - matplotlib
+  - tk
+
+  # PDF
+  - fpdf2
+
+  # HF / NLP tooling (conda)
+  - transformers
+  - protobuf
+  - tokenizers
+  - sentencepiece
+
+  # PyTorch CPU
+  - pytorch=2.6
+  - cpuonly
+
+  # Ensure pip tooling is modern enough for wheels
+  - pip
+  - setuptools
+  - wheel
+
+  # Pip extras + spaCy/scispaCy + correct model
+  - pip:
+      - accelerate
+      - scispacy==0.5.4
+      - spacy==3.7.4
+      - https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_ner_bionlp13cg_md-0.5.4.tar.gz
