@@ -33,7 +33,7 @@ NER_MODEL_NAME = "en_ner_bionlp13cg_md"
 # Compute device configuration
 ## device = -1               # CPU
 ## device = 0                # First CUDA GPU
-device = 0
+device = -1
 
 
 ################################
@@ -722,4 +722,5 @@ def fetch_record_xml(pmcid):
         return record
 
     except Exception:
+
         return None
