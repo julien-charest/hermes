@@ -1,0 +1,32 @@
+HERMES is configured through a small set of inputs in the graphical user interface. These parameters control how articles are retrieved, screened, ranked, and exported.
+
+What is the Request title used for?
+The Request title labels your analysis and is used to create the output folder and filenames. All run outputs (log file, figures, CSV results table, and PDF report) are saved under a run-specific directory named with the current date + request title.
+Tip: Reusing the same request title on the same date can overwrite existing outputs in the selected destination directory.
+
+Why does HERMES ask for an Email address?
+NCBI requires user identification for Entrez access. HERMES uses your email to set Entrez.email before querying PubMed Central.
+If you configured an NCBI API key in hermes.py, it should correspond to the same NCBI account associated with the provided email to ensure correct rate-limit handling and compliance with NCBI usage policies.
+
+What are Query terms (PMC query)?
+Query terms define the PubMed Central search and are passed directly to the Entrez esearch call against the PMC database.
+You can use standard PubMed query syntax (field tags, Boolean operators, filters, etc.) to refine the retrieved corpus before screening and scoring.
+
+What are Scoring keywords, and how are they matched?
+Scoring keywords are a comma-separated list used for full-text screening and ranking after retrieval.
+HERMES matches keywords against parsed full text using exact substring matching. This is transparent and fast, but it does not expand synonyms or acronyms automatically.
+No synonym expansion: "Caenorhabditis elegans" will not match "C. elegans".
+Some morphological capture: substring matching can still catch straightforward extensions when the literal substring is present (e.g., "toxic" matches "toxicity" and "toxicology").
+Tip: For higher recall, include common variants, abbreviations, and alternative spellings as additional keywords.
+
+What does Strict mode do?
+When Strict mode is enabled, HERMES applies a deterministic inclusion rule during screening:
+Any article that does not contain all user-defined keywords is discarded.
+Strict mode is useful for high-specificity screening where co-occurrence of multiple concepts is required.
+
+What does Number of results (report size) control?
+Number of results controls how many top-ranked articles are included in the final PDF report (with automated summaries and entity extraction).
+
+Importantly:
+The entire retrieved corpus is still mined, screened, scored, and exported as a CSV results table.
+The report size only controls the subset of highest-scoring articles that receive the most detailed per-article processing and appear in the PDF.
