@@ -55,7 +55,7 @@ To use *HERMES* and generate a PDF report with ranked articles for your query:
 - Enter the number of results to be included in the final report
 - Submit the query
 
-For detailed explanations of parameters, scoring behavior, LLM summarization, and configuration options, please refer to the [FAQ](https://github.com/julien-charest/hermes/blob/main/FAQ).
+For detailed explanations of parameters, scoring behavior, LLM summarization, and configuration options, please refer to the [FAQ](https://github.com/julien-charest/hermes/blob/main/FAQ.md).
 
 
 ![Hermes App](assets/app_screenshot.png "Hermes App")
