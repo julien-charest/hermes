@@ -48,11 +48,14 @@ python ./hermes.py
 To use *HERMES* and generate a PDF report with ranked articles for your query:
 
 - Specify a request title
-- Enter your email address (for access to Entrez server)
-- Define your Pubmed query (Pubmed filters are supported) (e.g. "ASE asymmetry in C. elegans")
-- Enter scoring keywords (e.g. "ASE, lsy-6, che-1")
-- Specify if strict mode is desired (all keywords must be included in the main text; powerful to discard article in which keywords are not mentioned together)
-- Enter a number of results to be included in final report
-- Submit query
+- Enter your email address (required for Entrez access)
+- Define your PubMed Central query (standard PubMed filters are supported; e.g. `"cellulase production trichoderma reesei"`)
+- Enter scoring keywords (e.g. `"cellulase, reesei, cbh1, xyr1"`)
+- Specify whether Strict mode is enabled (requires all scoring keywords to co-occur in the article main text)
+- Enter the number of results to be included in the final report
+- Submit the query
+
+For detailed explanations of parameters, scoring behavior, LLM summarization, and configuration options, please refer to the [FAQ](https://github.com/julien-charest/hermes/blob/main/FAQ).
+
 
 ![Hermes App](assets/app_screenshot.png "Hermes App")

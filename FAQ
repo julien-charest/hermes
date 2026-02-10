@@ -1,32 +1,157 @@
+# HERMES — Frequently Asked Questions
+
 HERMES is configured through a small set of inputs in the graphical user interface. These parameters control how articles are retrieved, screened, ranked, and exported.
 
-What is the Request title used for?
-The Request title labels your analysis and is used to create the output folder and filenames. All run outputs (log file, figures, CSV results table, and PDF report) are saved under a run-specific directory named with the current date + request title.
-Tip: Reusing the same request title on the same date can overwrite existing outputs in the selected destination directory.
+## What is the Request title used for?
+The Request title labels your analysis and determines the output folder and filenames. All outputs generated during a run (log file, figures, CSV results table, and PDF report) are saved under a run-specific directory named using the current date and request title.
 
-Why does HERMES ask for an Email address?
-NCBI requires user identification for Entrez access. HERMES uses your email to set Entrez.email before querying PubMed Central.
-If you configured an NCBI API key in hermes.py, it should correspond to the same NCBI account associated with the provided email to ensure correct rate-limit handling and compliance with NCBI usage policies.
+**Tip:** Reusing the same request title on the same date may overwrite existing outputs in the selected destination directory.
 
-What are Query terms (PMC query)?
-Query terms define the PubMed Central search and are passed directly to the Entrez esearch call against the PMC database.
-You can use standard PubMed query syntax (field tags, Boolean operators, filters, etc.) to refine the retrieved corpus before screening and scoring.
 
-What are Scoring keywords, and how are they matched?
-Scoring keywords are a comma-separated list used for full-text screening and ranking after retrieval.
-HERMES matches keywords against parsed full text using exact substring matching. This is transparent and fast, but it does not expand synonyms or acronyms automatically.
-No synonym expansion: "Caenorhabditis elegans" will not match "C. elegans".
-Some morphological capture: substring matching can still catch straightforward extensions when the literal substring is present (e.g., "toxic" matches "toxicity" and "toxicology").
-Tip: For higher recall, include common variants, abbreviations, and alternative spellings as additional keywords.
+## Why does HERMES ask for an email address?
+NCBI requires user identification for Entrez access. HERMES uses your email address to set `Entrez.email` before querying PubMed Central. If an NCBI API key is configured in `hermes.py` (Line 41), it should correspond to the same NCBI account associated with the provided email to ensure proper rate-limit handling and compliance with NCBI usage policies.
 
-What does Strict mode do?
-When Strict mode is enabled, HERMES applies a deterministic inclusion rule during screening:
-Any article that does not contain all user-defined keywords is discarded.
-Strict mode is useful for high-specificity screening where co-occurrence of multiple concepts is required.
+**Tip:** Information on how to obtain an NCBI API key can be found in the official NCBI documentation (https://support.nlm.nih.gov/kbArticle/?pn=KA-05317)
 
-What does Number of results (report size) control?
-Number of results controls how many top-ranked articles are included in the final PDF report (with automated summaries and entity extraction).
 
-Importantly:
-The entire retrieved corpus is still mined, screened, scored, and exported as a CSV results table.
-The report size only controls the subset of highest-scoring articles that receive the most detailed per-article processing and appear in the PDF.
+## What are Query terms (PMC query)?
+Query terms define the PubMed Central search and are passed directly to the Entrez `esearch` call against the PMC database. Standard PubMed query syntax (field tags, Boolean operators, filters, etc.) can be used to refine the retrieved corpus prior to screening and scoring.
+
+**Tip:** Guidance on refining searches using PubMed filters is available in the official NCBI documentation (https://pubmed.ncbi.nlm.nih.gov/help/#help-filters)
+
+
+## What are Scoring keywords, and how are they matched?
+Scoring keywords are provided as a comma-separated list and are used for full-text screening and ranking after article retrieval. HERMES performs exact substring matching against parsed full text. This behavior is deliberately simple and transparent: keywords are matched literally as written, without automatic synonym or acronym expansion.
+
+**Tip:** Substring matching may still capture straightforward word extensions when the literal keyword is present (for example, `"toxic"` will match `"toxicity"` and `"toxicology"`). For higher recall, include common variants, abbreviations, and alternative spellings as additional keywords.
+
+
+## What does Strict mode do?
+When Strict mode is enabled, HERMES applies a deterministic inclusion rule during screening: any article that does not contain *all* user-defined scoring keywords is discarded. Strict mode is intended for high-specificity screening scenarios where co-occurrence of multiple concepts is required.
+
+**Tip:** Strict mode can also be used for negative literature screening, for example to assess whether two or more keywords *do not* co-occur within the PubMed Central corpus.
+
+
+## What does Number of results (report size) control?
+This parameter controls how many top-ranked articles are included in the final PDF report, which contains automated summaries and entity extraction. The entire retrieved corpus for a given query is still mined, screened, scored, and the scoring results exported as a CSV file (`/results/hermes_results.csv`).
+
+**Importantly:** The report size only determines which subset of the highest-scoring articles receives detailed per-article processing and appears in the PDF.
+
+
+## What results are generated by HERMES?
+At the end of a run, HERMES generates multiple outputs summarizing the retrieved corpus, its metadata, and the applied screening and scoring steps.
+
+### Figures (PNG format)
+HERMES generates a set of exploratory figures for the entire retrieved corpus, including:
+
+- A histogram of the top 25 associated keywords extracted from article metadata
+- A line plot showing the number of retrieved articles by year of publication
+- Box plots summarizing:
+  - the number of citations per article (metadata),
+  - the occurrence counts of each scoring keyword in the article main text,
+  - the overall HERMES score distribution across the corpus
+
+### Results table (CSV)
+A single results table is exported as a CSV file (`/results/hermes_results.csv`).  
+The table schema is **fixed**, with one row per retrieved article and a consistent set of columns across runs.
+
+The exported columns are:
+
+- PMCID  
+- PMID  
+- Title  
+- Year  
+- Journal  
+- DOI  
+- Authors  
+- Associated keywords (metadata-derived)  
+- Citation count  
+- Scoring keyword occurrence counts  
+- HERMES score  
+- Term-frequency–based metrics  
+- Word count  
+- Abstract text  
+
+This table contains results for the *entire retrieved corpus*, independent of the selected report size.
+
+**Tip:** Result tables from multiple HERMES runs can be integrated for downstream meta-analysis workflows.
+
+### PDF report
+A final PDF report is generated for the top-ranked articles (as defined by the **Number of results (report size)** parameter). The report includes automated section-level summaries, extracted biomedical entities, figure captions, and direct hyperlinks to the corresponding PubMed Central articles for each selected entry.
+
+
+## Are full-text articles cached locally by HERMES?
+No. HERMES does **not** cache or persist full-text articles locally across runs. Full-text content is retrieved from PubMed Central at runtime and processed in memory for the duration of the analysis. Once a run completes, article texts are not retained on disk. This behavior is intentional and avoids uncontrolled local storage growth while ensuring analyses reflect the current state of the PMC repository.
+
+
+## How does the HERMES scoring function work?
+HERMES assigns each retrieved article a relevance score based on a transparent, weighted combination of three components:
+
+1. **Textual relevance to the scoring keywords**  
+2. **Citation count**  
+3. **Publication age**
+
+The score is designed to prioritize articles that are strongly keyword-relevant, well cited, and relatively recent, while remaining simple and interpretable.
+
+### Scoring formula
+For each article, the final score is computed as:
+
+`score = (w_tf_idf × TF-IDF_sum) × (1 + w_cit × citations) / (1 + w_year × age)`
+
+where:
+- **TF-IDF_sum** is the sum of TF-IDF contributions for all scoring keywords in the article,
+- **citations** is the article’s citation count,
+- **age** is the number of years since publication.
+
+### Textual relevance (TF-IDF)
+HERMES computes term frequency (TF) for each scoring keyword within the article’s full text and inverse document frequency (IDF) across the entire retrieved corpus. The TF-IDF contributions of all scoring keywords are summed to represent overall semantic relevance.
+
+### Citation boost
+Articles with higher citation counts receive a multiplicative score boost. This favors work that has been cited more frequently, without allowing citation count alone to dominate ranking.
+
+### Publication age penalty
+Older articles are down-weighted using a smooth age-based penalty, favoring more recent publications while still allowing highly relevant older work to rank well.
+
+### Weighting parameters
+The relative influence of each component is controlled by fixed weighting factors defined explicitly in the scoring module (`modules/scoring.py`). These parameters can be adjusted by advanced users:
+
+- TF-IDF weight (`w_tf_idf`) (Line 27)
+- Citation boost weight (`w_cit`) (Line 28)
+- Age penalty weight (`w_year`) (Line 29)
+
+### Strict mode rule
+When Strict mode is enabled, an additional rule is applied after scoring: any article missing one or more mandatory scoring keywords is assigned a score of zero, regardless of its other properties. This ensures deterministic exclusion of articles that do not meet all required criteria.
+
+
+## How does LLM-based summarization work in HERMES?
+HERMES uses a locally executed, Hugging Face–supported large language model (LLM) to generate section-level summaries of full-text PubMed Central articles.
+
+### Summarization scope
+Summarization is applied only to selected narrative sections of the article (e.g. Introduction, Results, Discussion, Conclusions), after preprocessing and filtering of non-narrative content such as tables, references, and supplementary material. Each section is summarized independently using a prompt-constrained batch call to the model.
+
+### Execution and reproducibility
+Summarization is performed using deterministic decoding settings (no sampling), ensuring stable and reproducible outputs for a fixed model, prompt, and input text. By default, the public release executes summarization on the CPU to ensure broad compatibility. GPU acceleration is supported and can be enabled by modifying the compute device configuration.
+
+### Configuration
+Both the summarization model and compute device are defined explicitly in the code and can be modified by advanced users in the summarization module (`modules/summarizing.py`):
+
+- `LLM_MODEL_NAME` controls the Hugging Face model used for summarization (Line 27)
+- `device` controls CPU or GPU execution (Line 36). A value of `-1` forces CPU execution, while `0` selects the first available CUDA-compatible GPU.
+
+These parameters are intentionally exposed to allow transparent experimentation without altering core pipeline logic.
+
+
+### LLM model selection
+The summarization model used by HERMES is defined explicitly in the configuration section of the code (`modules/summarizing.py`; Line 27). This choice reflects empirical testing of multiple Hugging Face–supported models during development. In our use case, `google/flan-t5-large` provided the best trade-off between summary quality, factual consistency, and execution time when applied to full-text PubMed Central articles.
+
+Other models were evaluated during development, including smaller variants such as `google/flan-t5-small`. While faster, these models produced noticeably lower-quality summaries and were therefore deemed suboptimal for HERMES’ intended use. We also tested domain-specific models trained on biomedical corpora. In practice, these models exhibited a higher tendency toward factual hallucination when summarizing long-form full-text articles and were not retained in the default configuration.
+
+In principle, any Hugging Face–supported sequence-to-sequence model compatible with the summarization pipeline can be evaluated by modifying the model identifier in the configuration. However, model performance and factual reliability may vary substantially depending on architecture and training data.
+
+
+### Execution model
+The selected summarization model is loaded locally (or from a remote Hugging Face cache if not already present) and used exclusively for abstractive summarization. No external API calls are made for summarization.
+
+
+### Design note
+LLM-based summarization in HERMES is intended to support rapid literature triage and contextual understanding. Generated summaries are not treated as ground truth and should always be interpreted alongside the original full-text articles, which are directly linked in the final PDF report.
